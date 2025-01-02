@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DraggableUI : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
+public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private RectTransform rectTransform;
     private Canvas canvas;
