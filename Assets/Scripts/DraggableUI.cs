@@ -19,7 +19,7 @@ public class DraggableUI : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     // Called when the drag starts
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Optionally make the object semi-transparent during drag (use CanvasGroup)
+        // Make the object semi-transparent during drag
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 0.6f;
@@ -53,7 +53,7 @@ public class DraggableUI : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndD
     // Called when the drag ends
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Optionally restore transparency after drag ends
+        // Restore transparency after drag ends
         if (canvasGroup != null)
         {
             canvasGroup.alpha = 1f;
