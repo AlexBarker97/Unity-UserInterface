@@ -1,62 +1,159 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using System.Collections;
 
 public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     private RectTransform rectTransform;
     private Canvas canvas;
-    private CanvasGroup canvasGroup;
+    private Image image;
 
-    private Vector2 offset; // Use Vector2 for 2D calculations
+    private Vector2 offset;
+    public bool selectedRed;
+    public bool selectedYellow;
+    public bool selectedBlue;
+
+    [SerializeField] private RectTransform region1; // Region 1 RectTransform
+    [SerializeField] private float radius1; // Radius of Region 1
+
+    [SerializeField] private RectTransform region2; // Region 2 RectTransform
+    [SerializeField] private float radius2; // Radius of Region 2
+
+    [SerializeField] private RectTransform region3; // Region 3 RectTransform
+    [SerializeField] private float radius3; // Radius of Region 3
+
+    [SerializeField] private GameObject nextObject;
 
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
-        canvasGroup = GetComponent<CanvasGroup>(); // Optional: Use if you want to add visual feedback (like transparency) during drag
-    }
+        image = GetComponent<Image>();
 
-    // Called when the drag starts
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        // Make the object semi-transparent during drag
-        if (canvasGroup != null)
+        if (image == null)
         {
-            canvasGroup.alpha = 0.6f;
+            Debug.LogError("DraggableToken requires an Image component.");
         }
 
-        // Calculate the offset between the mouse position and the center of the UI element
+        selectedRed = false;
+        selectedYellow = false;
+        selectedBlue = false;
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (image != null)
+        {
+            // Make the image semi-transparent during dragging
+            Color tempColor = image.color;
+            tempColor.a = 0.6f;
+            image.color = tempColor;
+        }
+
         Vector3 globalMousePosition = eventData.position;
         Vector2 localMousePosition;
 
-        // Convert the global mouse position to the local position of the UI element relative to the Canvas
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, globalMousePosition, canvas.worldCamera, out localMousePosition);
 
-        // Calculate the offset (difference) between the mouse and the center of the RectTransform
         offset = rectTransform.localPosition - new Vector3(localMousePosition.x, localMousePosition.y, rectTransform.localPosition.z);
     }
 
-    // Called while dragging the UI element
     public void OnDrag(PointerEventData eventData)
     {
-        // Get the global mouse position
         Vector3 globalMousePosition = eventData.position;
         Vector2 localPosition;
 
-        // Convert the global mouse position to the local position of the UI element relative to the Canvas
         RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, globalMousePosition, canvas.worldCamera, out localPosition);
 
-        // Apply the offset to keep the element centered on the cursor
         rectTransform.localPosition = new Vector3(localPosition.x, localPosition.y, rectTransform.localPosition.z) + new Vector3(offset.x, offset.y, 0f);
     }
 
-    // Called when the drag ends
     public void OnEndDrag(PointerEventData eventData)
     {
-        // Restore transparency after drag ends
-        if (canvasGroup != null)
+        if (image != null)
         {
-            canvasGroup.alpha = 1f;
+            // Restore the image's transparency
+            Color tempColor = image.color;
+            tempColor.a = 1f;
+            image.color = tempColor;
+        }
+
+        // Check each region and trigger corresponding effect
+        if (IsWithinRegion(rectTransform.localPosition, region1.localPosition, radius1))
+        {
+            OnDropInRegion1();
+        }
+        else if (IsWithinRegion(rectTransform.localPosition, region2.localPosition, radius2))
+        {
+            OnDropInRegion2();
+        }
+        else if (IsWithinRegion(rectTransform.localPosition, region3.localPosition, radius3))
+        {
+            OnDropInRegion3();
+        }
+    }
+
+    private bool IsWithinRegion(Vector2 tokenPosition, Vector2 regionCenter, float radius)
+    {
+        float distance = Vector2.Distance(tokenPosition, regionCenter);
+        return distance <= radius;
+    }
+
+    // Empty function for Region 1 effect
+    private void OnDropInRegion1()
+    {
+        Debug.Log("Token dropped in RED Region");
+        selectedRed = true;
+        selectedYellow = false;
+        selectedBlue = false;
+        StartCoroutine(FadeOutToken());
+    }
+
+    // Empty function for Region 2 effect
+    private void OnDropInRegion2()
+    {
+        Debug.Log("Token dropped in YELLOW Region");
+        selectedRed = false;
+        selectedYellow = true;
+        selectedBlue = false;
+        StartCoroutine(FadeOutToken());
+    }
+
+    // Empty function for Region 3 effect
+    private void OnDropInRegion3()
+    {
+        Debug.Log("Token dropped in BLUE Region");
+        selectedRed = false;
+        selectedYellow = false;
+        selectedBlue = true;
+        StartCoroutine(FadeOutToken());
+    }
+
+    private IEnumerator FadeOutToken()
+    {
+        if (image == null) yield break; // Ensure the Image component exists
+
+        float fadeDuration = 0.5f; // Duration of the fade in seconds
+        Color tempColor = image.color;
+        float startAlpha = tempColor.a;
+
+        for (float t = 0; t < fadeDuration; t += Time.deltaTime)
+        {
+            float normalizedTime = t / fadeDuration; // Normalized time [0, 1]
+            tempColor.a = Mathf.Lerp(startAlpha, 0, normalizedTime);
+            image.color = tempColor;
+            yield return null; // Wait until the next frame
+        }
+
+        // Ensure the alpha is exactly 0 at the end
+        tempColor.a = 0;
+        image.color = tempColor;
+
+        gameObject.SetActive(false);
+        if (nextObject != null)
+        {
+            nextObject.SetActive(true);
         }
     }
 }
