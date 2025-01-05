@@ -25,6 +25,10 @@ public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     [SerializeField] private GameObject nextObject;
 
+    [SerializeField] private GameObject redSlider;
+    [SerializeField] private GameObject yellowSlider;
+    [SerializeField] private GameObject blueSlider;
+
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
@@ -107,6 +111,10 @@ public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
         selectedRed = true;
         selectedYellow = false;
         selectedBlue = false;
+        if (redSlider != null)
+        {
+            redSlider.GetComponent<ProgressBar>().targetValue += 0.333f;
+        }
         StartCoroutine(FadeOutToken());
     }
 
@@ -117,6 +125,10 @@ public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
         selectedRed = false;
         selectedYellow = true;
         selectedBlue = false;
+        if (yellowSlider != null)
+        {
+            yellowSlider.GetComponent<ProgressBar>().targetValue += 0.333f;
+        }
         StartCoroutine(FadeOutToken());
     }
 
@@ -127,6 +139,10 @@ public class DraggableToken : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
         selectedRed = false;
         selectedYellow = false;
         selectedBlue = true;
+        if (blueSlider != null)
+        {
+            blueSlider.GetComponent<ProgressBar>().targetValue += 0.333f;
+        }
         StartCoroutine(FadeOutToken());
     }
 
