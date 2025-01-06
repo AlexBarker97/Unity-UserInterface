@@ -42,7 +42,6 @@ public class ColourFader : MonoBehaviour
         {
             FadeToSpecificColor(Color.white);
             fadeTarget = "white";
-            Debug.Log("whitecalled");
         }
         else if (redCount > 0 && blueCount > 0 && yellowCount == 0 && fadeTarget != "purple")
         {
@@ -74,7 +73,6 @@ public class ColourFader : MonoBehaviour
             FadeToSpecificColor(Color.blue);
             fadeTarget = "blue";
         }
-        Debug.Log(fadeTarget);
     }
 
     public void FadeToSpecificColor(Color targetColor)
@@ -93,7 +91,5 @@ public class ColourFader : MonoBehaviour
             timeElapsed += Time.deltaTime;
             yield return null;
         }
-
-        //panelImage.color = targetColor;
     }
 }
