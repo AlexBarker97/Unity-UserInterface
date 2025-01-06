@@ -12,6 +12,7 @@ public class ColourFader : MonoBehaviour
 
     private Coroutine fadeCoroutine;
     private float fadeDuration = 1f;
+    private string fadeTarget = "grey";
 
     private bool boolToken1R, boolToken1Y, boolToken1B;
     private bool boolToken2R, boolToken2Y, boolToken2B;
@@ -37,41 +38,43 @@ public class ColourFader : MonoBehaviour
         int yellowCount = (boolToken1Y ? 1 : 0) + (boolToken2Y ? 1 : 0) + (boolToken3Y ? 1 : 0);
         int blueCount = (boolToken1B ? 1 : 0) + (boolToken2B ? 1 : 0) + (boolToken3B ? 1 : 0);
 
-        if (fadeCoroutine == null)
+        if (redCount == 1 && yellowCount == 1 && blueCount == 1 && fadeTarget != "white")
         {
-            if (redCount == 1 && yellowCount == 1 && blueCount == 1)
-            {
-                FadeToSpecificColor(Color.white);
-            }
-            else if (redCount > 0 && blueCount > 0 && yellowCount == 0)
-            {
-                FadeToSpecificColor(new Color(0.5f, 0f, 0.5f)); // Purple
-            }
-            else if (blueCount > 0 && yellowCount > 0 && redCount == 0)
-            {
-                FadeToSpecificColor(Color.green);
-            }
-            else if (yellowCount > 0 && redCount > 0 && blueCount == 0)
-            {
-                FadeToSpecificColor(new Color(1f, 0.65f, 0f)); // Orange
-            }
-            else if (redCount > 0 && yellowCount == 0 && blueCount == 0)
-            {
-                FadeToSpecificColor(Color.red);
-            }
-            else if (yellowCount > 0 && redCount == 0 && blueCount == 0)
-            {
-                FadeToSpecificColor(Color.yellow);
-            }
-            else if (blueCount > 0 && redCount == 0 && yellowCount == 0)
-            {
-                FadeToSpecificColor(Color.blue);
-            }
-            else
-            {
-                FadeToSpecificColor(Color.grey);
-            }
+            FadeToSpecificColor(Color.white);
+            fadeTarget = "white";
+            Debug.Log("whitecalled");
         }
+        else if (redCount > 0 && blueCount > 0 && yellowCount == 0 && fadeTarget != "purple")
+        {
+            FadeToSpecificColor(new Color(0.5f, 0f, 0.5f));
+            fadeTarget = "purple";
+        }
+        else if (blueCount > 0 && yellowCount > 0 && redCount == 0 && fadeTarget != "green")
+        {
+            FadeToSpecificColor(Color.green);
+            fadeTarget = "green";
+        }
+        else if (yellowCount > 0 && redCount > 0 && blueCount == 0 && fadeTarget != "orange")
+        {
+            FadeToSpecificColor(new Color(1f, 0.65f, 0f));
+            fadeTarget = "orange";
+        }
+        else if (redCount > 0 && yellowCount == 0 && blueCount == 0 && fadeTarget != "red")
+        {
+            FadeToSpecificColor(Color.red);
+            fadeTarget = "red";
+        }
+        else if (yellowCount > 0 && redCount == 0 && blueCount == 0 && fadeTarget != "yellow")
+        {
+            FadeToSpecificColor(Color.yellow);
+            fadeTarget = "yellow";
+        }
+        else if (blueCount > 0 && redCount == 0 && yellowCount == 0 && fadeTarget != "blue")
+        {
+            FadeToSpecificColor(Color.blue);
+            fadeTarget = "blue";
+        }
+        Debug.Log(fadeTarget);
     }
 
     public void FadeToSpecificColor(Color targetColor)
@@ -88,10 +91,9 @@ public class ColourFader : MonoBehaviour
         {
             panelImage.color = Color.Lerp(startColor, targetColor, timeElapsed / fadeDuration);
             timeElapsed += Time.deltaTime;
-            yield return new WaitForSeconds(fadeDuration); // Example coroutine action
-            fadeCoroutine = null; // Reset the reference once the coroutine finishes
+            yield return null;
         }
 
-        panelImage.color = targetColor;
+        //panelImage.color = targetColor;
     }
 }
